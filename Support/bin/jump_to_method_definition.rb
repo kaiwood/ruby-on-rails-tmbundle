@@ -2,7 +2,6 @@
 
 require 'rails_bundle_tools'
 require 'fileutils'
-require 'rubygems'
 require "#{ENV['TM_SUPPORT_PATH']}/lib/tm/htmloutput"
 
 class FindMethod
@@ -69,8 +68,12 @@ class FindMethod
   end
 
   def find_in_gems(match_string)
-    Gem.latest_load_paths.each do |directory|
-      find_in_directory(directory, match_string)
+    paths = `cd "#{ENV['TM_PROJECT_DIRECTORY']}" && bundle show --paths`
+    paths.each_line do |line|
+      directory = line.strip
+      if File.directory?(directory)
+        find_in_directory(directory, match_string)
+      end
     end
   end
 
